@@ -6,7 +6,7 @@ const Ex = require("./exercice");
 User.belongsToMany(Ex, { through: 'user_exes', foreignKey : "userId" });
 Ex.belongsToMany(User, { through: 'user_exes', foreignKey : "exId" });
 
-
+module.exports = {User, Ex};
 
 
 

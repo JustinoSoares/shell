@@ -3,8 +3,39 @@ const bcrypt = require('bcrypt')
 const express = require('express')
 const { body, validationResult } = require('express-validator')
 const Exercice = require('../models/exercice')
+const User_ex = require("../models/user_has_ex");
 const { Sequelize, Op, where } = require('sequelize')
+const User = require('../models/users')
 module.exports = {
+  /*ex_belong_users: async (req, res) => {
+    try {
+      const ex = await Exercice.findByPk(req.params.exId, {
+        include: {
+          model: User,
+          through: {
+            attributes: ['feito']  // Incluir o campo 'feito' da tabela intermediária
+          }
+        }
+      })
+      if (!ex) {
+        return res.status(404).json({
+          status: 'false',
+          msg: 'Nem um usuário ainda fez ou não existe este exercício'
+        })
+      }
+      res.status(201).json({
+        status: 'true',
+        msg: 'Exercício encontrado com sucesso',
+        data: ex
+      })
+    } catch (error) {
+      return res.status(500).json({
+        status: 'false',
+        msg: 'Ocorreu um erro',
+      })
+    }
+  },*/
+
   each_ex: async (req, res) => {
     try {
       const ex = await Exercice.findByPk(req.params.exId)
@@ -19,35 +50,58 @@ module.exports = {
         msg: 'Exercício encontrado com sucesso',
         data: ex
       })
-    } catch {
+    } catch (error) {
       return res.status(500).json({
         status: 'false',
-        msg: 'Ocorreu um erro'
+        msg: 'Ocorreu um erro',
       })
     }
   },
 
+
   show_ex: async (req, res) => {
-    const {categoria} = req.query;
-    const cat = categoria ? categoria : null;
+    const done = 0;
+    const { categoria } = req.query;
+    const whereCategoria = categoria ? { categoria } : {};
     try {
       const ex = await Exercice.findAll({
-        where : {
-          categoria: cat,
-        }
-      })
+        where: whereCategoria,
+        include: [
+          {
+            model: User,
+            through: {
+              attributes: [] // Não queremos os atributos da tabela intermediária
+            },
+            where: {
+              id: req.userId, // Filtramos para o usuário logado
+            },
+            required: false // Isso permite que os exercícios sejam listados mesmo se o usuário não tiver completado
+          }
+        ]
+      }
+      )
       if (!ex.length) {
         return res.status(404).json({
           status: 'false',
           msg: 'Nem um Exercício encontrado'
         })
       }
+      const resultado = ex.map((exercicio, index) => ({
+        id: exercicio.id,
+        index: index + 1,
+        name: exercicio.name,
+        feito: exercicio.users.length > 0, // Se o usuário tem o exercício, então foi feito
+        categoria: exercicio.categoria,
+        resolvidos: exercicio.resolvidos
+
+      }));
       res.status(201).json({
         status: 'true',
         msg: 'Encontrado com sucesso',
-        data: ex
+        data: resultado
       })
-    } catch (error){
+
+    } catch (error) {
       return res.status(500).json({
         status: 'false',
         msg: 'Ocorreu um erro',
@@ -93,13 +147,12 @@ module.exports = {
     }
   },
 
-  delete_ex : async (req, res) => {
+  delete_ex: async (req, res) => {
     try {
-      const ex  = await Exercice.findByPk(req.params.exId);
-      if (!ex)
-      {
+      const ex = await Exercice.findByPk(req.params.exId);
+      if (!ex) {
         return res.status(404).json({
-          status : "false",
+          status: "false",
           msg: "Não foi encontrado esse exercício"
         });
       }

@@ -5,24 +5,16 @@ const axios = require('axios')
 const Ex = require('../models/exercice')
 const User = require('../models/users')
 const Exercice = require('../models/exercice')
+const User_ex = require('../models/user_has_ex')
 
 module.exports = {
   validate: async (req, res) => {
     const exId = req.params.exId
     const ex = await Exercice.findByPk(exId)
     const user = await User.findByPk(req.userId)
-    const caminho = `build/${user.name}`
     const conteudo = req.body.content
-
-    try {
-      fs.writeFileSync(caminho, conteudo)
-    } catch (error) {
-      return res.json({
-        msg: "Error"
-      });
-    }
     const response = await Ex.findByPk(exId)
-    exec(`sh ./${response.tester} ${user.name}`, (error, stdout, stderr) => {
+    exec(`sh ./${response.tester} "${conteudo}"`, async (error, stdout, stderr) => {
       if (error) {
         return res.json({
           status: 'error',
@@ -31,25 +23,45 @@ module.exports = {
       }
       // Se houver algum erro no stderr
       if (stderr) {
+        const simplifiedError = stderr
+          .replace(/\/.*\//g, '')  // Remove caminho de diretórios
+          .replace(/:\s\d+:\s/g, ': ');  // Remove números de linha
         return res.json({
-          status: 'false',
-          msg: stderr
+          status: 'error',
+          msg: simplifiedError,
         })
       }
       // Imprime a saída do script
       if (stdout == 'OK\n') {
-        ex.resolvidos += 1
-        user.resolvidos += 1
-        user.pontos += ex.nivel
-        ex.save()
-        user.save()
+        const user_ex = await User_ex.findAll({
+          where: {
+            userId: req.userId,
+            exId: req.params.exId,
+          }
+        });
+        if (!user_ex.length) {
+          // Aumentar o número de pessoas que resolveram
+          ex.resolvidos += 1
+          //Aumentar a quantidade de fezes que um usuário resolveu
+          user.resolvidos += 1
+          //Aumentar o nível
+          user.pontos += ex.nivel
+          User_ex.create({
+            userId: req.userId,
+            exId: req.params.exId,
+            feito: true
+          })
+          await ex.save()
+          await user.save()
+        }
         return res.json({
-          status: 'true',
-          msg: 'OK'
+          status: 'OK',
+          msg: "Aceite"
         })
       } else {
         return res.json({
-          msg: stdout
+          status: "KO",
+          msg: "Recusado"
         })
       }
     })

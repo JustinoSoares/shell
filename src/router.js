@@ -51,8 +51,10 @@ const upload = multer({
     }
   }
 })
+router.get('/each_user/:userId', user_controller.each_user);
+//router.get('/each_ex_with_users/:exId', exec.ex_with_users);
 router.get('/each_ex/:exId', exec.each_ex)
-router.get('/show_ex', exec.show_ex)
+router.get('/show_ex', auth.authenticateToken, exec.show_ex)
 router.post('/create_ex', upload.single('tester'), exec.create_ex)
 router.post('/validate/:exId', auth.authenticateToken, validate_exec.validate)
 

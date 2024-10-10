@@ -3,12 +3,38 @@ const bcrypt = require('bcrypt')
 const express = require('express')
 const { body, validationResult } = require('express-validator')
 const jwt = require('jsonwebtoken')
+const User = require('../models/users')
+const Ex = require('../models/exercice')
 
 module.exports = {
+
+  // cada usuário
+  each_user: async (req, res) => {
+    const user = await User.findByPk(req.params.userId, {
+      include: {
+        model: Ex,
+        through: {
+          attributes: ['feito'],  // Incluir o campo 'feito' da tabela intermediária
+        },
+      }
+    });
+    if (!user) {
+      return res.status("404").json({
+        status: "false",
+        msg: "Não encontrado",
+      });
+    }
+    return res.status(200).json({
+      status: "true",
+      msg: "User encontrado",
+      data: user
+    });
+  },
+
   // criar users
   create: async (req, res) => {
     // function cryptografia
-    async function hashPassword (password) {
+    async function hashPassword(password) {
       const saltsRounds = 10
       const hashedPassword = await bcrypt.hash(password, saltsRounds)
       return hashedPassword
@@ -36,7 +62,7 @@ module.exports = {
       const user = await ModuleUser.create({
         name,
         email,
-        password : hashedPassword,
+        password: hashedPassword,
         pais,
       })
       res.status(201).json({

@@ -11,6 +11,10 @@ const user_ex = sequelize.define("user_exes", {
         autoIncrement : true,
         allowNull: false,
     },
+    feito : {
+        type: Sequelize.BOOLEAN,
+        defaultValue : 0,
+    },
     exId: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -34,5 +38,5 @@ const user_ex = sequelize.define("user_exes", {
         primaryKey: true,
     },
 })
-user_ex.sync({ alter : true});
+//user_ex.sync({ alter : true});
 module.exports = user_ex;
