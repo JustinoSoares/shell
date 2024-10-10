@@ -2,7 +2,7 @@ require('dotenv').config({ path: './.env' });
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const router = require('./route');
+const router = require('./router');
 
 const { exec } = require('child_process');
 
