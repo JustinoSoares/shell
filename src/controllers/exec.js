@@ -7,35 +7,6 @@ const User_ex = require("../models/user_has_ex");
 const { Sequelize, Op, where } = require('sequelize')
 const User = require('../models/users')
 module.exports = {
-  /*ex_belong_users: async (req, res) => {
-    try {
-      const ex = await Exercice.findByPk(req.params.exId, {
-        include: {
-          model: User,
-          through: {
-            attributes: ['feito']  // Incluir o campo 'feito' da tabela intermediária
-          }
-        }
-      })
-      if (!ex) {
-        return res.status(404).json({
-          status: 'false',
-          msg: 'Nem um usuário ainda fez ou não existe este exercício'
-        })
-      }
-      res.status(201).json({
-        status: 'true',
-        msg: 'Exercício encontrado com sucesso',
-        data: ex
-      })
-    } catch (error) {
-      return res.status(500).json({
-        status: 'false',
-        msg: 'Ocorreu um erro',
-      })
-    }
-  },*/
-
   each_ex: async (req, res) => {
     try {
       const ex = await Exercice.findByPk(req.params.exId)
@@ -146,6 +117,46 @@ module.exports = {
       })
     }
   },
+
+  update_ex: async (req, res) => {
+    //Receber qualquer erro de validação
+    const errors = validationResult(req)
+
+    //Verificar se existe algum erro de validação se houver retornar
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        errors: errors.array().map(err => ({
+          type: err.type,
+          msg: err.msg,
+          campo: err.path,
+          valor: err.value
+        }))
+      })
+    }
+    try {
+      const { name, subject, nivel, categoria } = req.body
+
+      const ex = await Exercice.update({
+        name,
+        subject,
+        nivel,
+        categoria,
+        tester: req.file.path
+      })
+      res.status(201).json({
+        status: 'true',
+        msg: 'Exercice actualizado com sucesso',
+        data: ex
+      })
+    } catch (error) {
+      return res.status(500).json({
+        status: 'false',
+        msg: 'Ocorreu um erro',
+        mm: error
+      })
+    }
+  },
+
 
   delete_ex: async (req, res) => {
     try {
