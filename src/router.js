@@ -58,12 +58,7 @@ router.get(
 )
 router.get('/show_users', auth.authenticateToken, user_controller.show_users)
 router.get('/each_ex/:exId', auth.authenticateToken, exec.each_ex)
-router.get(
-  '/show_ex',
-  auth.authenticateToken,
-  auth.authenticateToken,
-  exec.show_ex
-)
+router.get('/show_ex', auth.authenticateToken, exec.show_ex)
 router.post(
   '/create_ex',
   auth.authenticateTokenAdmin,

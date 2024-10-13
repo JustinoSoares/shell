@@ -45,6 +45,25 @@ http://localhost:3000/api/
   }
   ```
 
+- **Resposta de Acesso**
+
+  ```json
+  {
+    "status": "true",
+    "msg": "Login bem sucedido",
+    "token": "o token"
+  }
+  ```
+
+  - **Resposta de Não Acesso**
+
+  ```json
+  {
+    "status": "false",
+    "msg": "Email ou senha inválida"
+  }
+  ```
+
 ### Criar Exercícios
 
 - **URL**: `/create_ex`
@@ -58,6 +77,142 @@ http://localhost:3000/api/
     "subject": "string",
     "categoria": "string",
     "tester": "string",
-    "nivel": "integer",
+    "nivel": "integer"
   }
   ```
+### Pegar cada usuário pelo Id
+
+- **URL**: `/each_user/:userId`
+- **Método**: `GET`
+- **Auth**: true.
+- **Corpo da Requisição**:
+
+  ```json
+  {
+	"status": "true",
+	"msg": "User encontrado",
+	"data": {
+		"id": "INT",
+		"name": "string",
+		"email": "string",
+		"sex": "string",
+		"pontos": "INT",
+		"resolvidos": "INT",
+		"pais": "string",
+		"createdAt": "date-time",
+		"updatedAt": "date-time",
+		"exercices": [
+          {
+				"id": "INT",
+				"name": "string",
+				"subject": "string",
+				"nivel": "INT",
+				"categoria": "string",
+				"tester": "string",
+				"resolvidos": "INT",
+				"createdAt": "date-time",
+				"updatedAt": "date-time",
+				"user_exes": {
+					"feito": "BOOLEAN"
+				}
+			}
+        ]
+  }
+  ```
+
+### Pegar todos os usuários
+
+- **URL**: `/show_users`
+- **Método**: `GET`
+- **Auth**: true.
+- **Filtragem**: `order_by` `asc_desc` `limitMax`
+- **Corpo da Requisição**:
+
+```json
+{
+	"status": "true",
+	"msg": "Encontrado com sucesso",
+	"data": [
+		{
+			"id": "INT",
+			"index": "INT",
+			"name": "string",
+			"resultado": "INT",
+			"pais": [
+				"🇦🇴",
+				"Nome_do_pais"
+			]
+		}
+	]
+}
+
+```
+
+### Pegar cada exercicio pelo id
+
+- **URL**: `/each_ex/:exId`
+- **Método**: `GET`
+- **Auth**: true.
+- **Corpo da Requisição**:
+```json
+ {
+    "status": "true",
+	"msg": "Exercício encontrado com sucesso",
+	"data": {
+		"id": "INT",
+		"name": "string",
+		"subject": "string",
+	    "nivel": "INT",
+		"categoria": "string",
+		"tester": "string",
+		"resolvidos": "INT",
+		"createdAt": "date-time",
+		"updatedAt": "date-time",
+		"user_exes": {
+    		"feito": "BOOLEAN"
+		}
+    }
+ }
+```
+
+### Pegar todos exercicios
+
+- **URL**: `/show_ex`
+- **Método**: `GET`
+- **Auth**: true.
+- **Filtragem**: `categoria`  `order_by` `asc_desc` `limitMax`
+- **Corpo da Requisição**:
+
+```json
+{
+	"status": "true",
+	"msg": "Encontrado com sucesso",
+	"data": [
+		{
+			"id": "INT",
+			"index": "INT",
+			"name": "string",
+			"feito": "BOOL",
+			"categoria": "string",
+			"resolvidos": "INT"
+		}
+	]
+}
+
+```
+
+
+### Pegar todos exercicios
+
+- **URL**: `/validate/:exId`
+- **Método**: `GET`
+- **Auth**: true.
+- **Descricao**: o avaliador.
+`limitMax`
+- **Corpo da Requisição**:
+
+```json
+  {
+    "content": "string",
+  }
+```

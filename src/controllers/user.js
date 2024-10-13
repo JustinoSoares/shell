@@ -7,7 +7,6 @@ const User = require('../models/users')
 const Ex = require('../models/exercice')
 const axios = require('axios')
 
-
 module.exports = {
   // cada usuário
   each_user: async (req, res) => {
@@ -25,10 +24,34 @@ module.exports = {
         msg: 'Não encontrado'
       })
     }
+    const {
+      id,
+      name,
+      email,
+      sex,
+      pontos,
+      resolvidos,
+      pais,
+      createdAt,
+      updatedAt,
+      exercices
+    } = user
+    const data = {
+      id,
+      name,
+      email,
+      sex,
+      pontos,
+      resolvidos,
+      pais,
+      createdAt,
+      updatedAt,
+      exercices
+    }
     return res.status(200).json({
       status: 'true',
       msg: 'User encontrado',
-      data: user
+      data: data
     })
   },
 

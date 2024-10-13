@@ -32,11 +32,16 @@ module.exports = {
 
   show_ex: async (req, res) => {
     const done = 0;
-    const { categoria } = req.query;
+    const { categoria, limitMax, order_by,  asc_desc} = req.query;
+    const whereLimitMax = limitMax ? limitMax : '3'
+    const whereOrderBy = order_by ? order_by : 'createdAt'
+    const whereAsc = asc_desc ? asc_desc : 'desc'
     const whereCategoria = categoria ? { categoria } : {};
     try {
       const ex = await Exercice.findAll({
         where: whereCategoria,
+        order: [[whereOrderBy, whereAsc]],
+        limit: parseInt(whereLimitMax),
         include: [
           {
             model: User,
