@@ -5,43 +5,99 @@ const { body, validationResult } = require('express-validator')
 const jwt = require('jsonwebtoken')
 const User = require('../models/users')
 const Ex = require('../models/exercice')
+const axios = require('axios')
+
 
 module.exports = {
-
   // cada usuário
   each_user: async (req, res) => {
     const user = await User.findByPk(req.params.userId, {
       include: {
         model: Ex,
         through: {
-          attributes: ['feito'],  // Incluir o campo 'feito' da tabela intermediária
-        },
+          attributes: ['feito'] // Incluir o campo 'feito' da tabela intermediária
+        }
       }
-    });
+    })
     if (!user) {
-      return res.status("404").json({
-        status: "false",
-        msg: "Não encontrado",
-      });
+      return res.status('404').json({
+        status: 'false',
+        msg: 'Não encontrado'
+      })
     }
     return res.status(200).json({
-      status: "true",
-      msg: "User encontrado",
+      status: 'true',
+      msg: 'User encontrado',
       data: user
-    });
+    })
+  },
+
+  show_users: async (req, res) => {
+    const { order_by, asc_desc, limitMax } = req.query
+    const whereLimitMax = limitMax ? limitMax : '3'
+    const whereOrderBy = order_by ? order_by : 'createdAt'
+    const whereAsc = asc_desc ? asc_desc : 'desc'
+    try {
+      const users = await User.findAll({
+        order: [[whereOrderBy, whereAsc]],
+        limit: parseInt(whereLimitMax)
+      })
+      if (!users.length) {
+        return res.status(404).json({
+          status: 'false',
+          msg: 'Nem um Usuário encontrado'
+        })
+      }
+
+      async function getCountryData (countryName) {
+        try {
+          const response = await axios.get(
+            `https://restcountries.com/v3.1/name/${countryName}`
+          )
+          // Retorna o nome oficial do país
+          return [response.data[0].flag, response.data[0].name.common]
+        } catch (error) {
+          console.error(`Erro ao buscar o país ${countryName}:`, error)
+          return 'País não encontrado'
+        }
+      }
+      async function mapUsersWithCountry () {
+        const resultado = await Promise.all(
+          users.map(async (user, index) => ({
+            id: user.id,
+            index: index + 1,
+            name: user.name,
+            resultado: user.resolvidos,
+            pontos: users.pontos,
+            pais: await getCountryData(user.pais)
+          }))
+        )
+        res.status(201).json({
+          status: 'true',
+          msg: 'Encontrado com sucesso',
+          data: resultado
+        })
+      }
+      mapUsersWithCountry()
+    } catch (error) {
+      return res.status(500).json({
+        status: 'false',
+        msg: 'Ocorreu um erro'
+      })
+    }
   },
 
   // criar users
   create: async (req, res) => {
     // function cryptografia
-    async function hashPassword(password) {
+    async function hashPassword (password) {
       const saltsRounds = 10
       const hashedPassword = await bcrypt.hash(password, saltsRounds)
       return hashedPassword
     }
 
     //Receber qualquer erro de validação
-    const errors = validationResult(req);
+    const errors = validationResult(req)
 
     //Verificar se existe algum erro de validação se houver retornar
     if (!errors.isEmpty()) {
@@ -63,7 +119,7 @@ module.exports = {
         name,
         email,
         password: hashedPassword,
-        pais,
+        pais
       })
       res.status(201).json({
         status: 'true',
@@ -73,7 +129,7 @@ module.exports = {
     } catch (error) {
       return res.status(500).json({
         status: 'false',
-        msg: 'Ocorreu um erro',
+        msg: 'Ocorreu um erro'
       })
     }
   },

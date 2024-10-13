@@ -64,7 +64,6 @@ module.exports = {
         feito: exercicio.users.length > 0, // Se o usuário tem o exercício, então foi feito
         categoria: exercicio.categoria,
         resolvidos: exercicio.resolvidos
-
       }));
       res.status(201).json({
         status: 'true',
@@ -79,6 +78,7 @@ module.exports = {
       })
     }
   },
+
   create_ex: async (req, res) => {
     //Receber qualquer erro de validação
     const errors = validationResult(req)
