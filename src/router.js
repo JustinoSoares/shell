@@ -12,7 +12,7 @@ const exec = require('./controllers/exec')
 const multer = require('multer')
 const path = require('path')
 const auth = require('./middleware/auth')
-
+const kickof = require("./controllers/kickof");
 router.get('/', (req, res) => {
   res.json({
     msg: 'Seja bem vindo ao shell'
