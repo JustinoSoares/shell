@@ -13,7 +13,7 @@ const user_ex = sequelize.define("user_exes", {
     },
     feito : {
         type: Sequelize.BOOLEAN,
-        defaultValue : 0,
+        defaultValue : false,
     },
     exId: {
         type: Sequelize.INTEGER,
@@ -38,5 +38,5 @@ const user_ex = sequelize.define("user_exes", {
         primaryKey: true,
     },
 })
-user_ex.sync({ alter : true});
+user_ex.sync();
 module.exports = user_ex;
