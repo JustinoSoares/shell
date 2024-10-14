@@ -41,5 +41,5 @@ const Exercice = sequelize.define('exercices', {
     defaultValue: 0
   }
 })
-Exercice.sync();
+Exercice.sync({ alter : true });
 module.exports = Exercice
