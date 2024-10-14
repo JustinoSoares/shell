@@ -4,8 +4,6 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const router = require('./router');
 
-const { exec } = require('child_process');
-
 const expressValidator = require("express-validator");
 
 const app = express();
