@@ -1,7 +1,7 @@
 require('dotenv').config({ path: '../env' })
 const { Sequelize } = require('sequelize')
 
-const sequelize = new Sequelize(
+/*const sequelize = new Sequelize(
   process.env.DATABASE,
   process.env.USER_NAME,
   process.env.PASS,
@@ -9,7 +9,9 @@ const sequelize = new Sequelize(
     host: process.env.HOST,
     dialect: 'mysql'
   }
-);
+);*/
+
+const sequelize = new Sequelize(process.env.DATABASE_URL || 'sqlite::memory:');
 
 (async () => {
   try {
