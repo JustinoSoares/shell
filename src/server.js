@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const router = require('./router');
 const expressValidator = require("express-validator");
+const port = process.env.PORT || 4000
 
 const app = express();
 app.use(express.json());
@@ -14,6 +15,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use("/api/", router);
 
 //module.exports = app
-app.listen(process.env.PORT, () => {
+app.listen(port, () => {
   console.log(`Servidor rodando na porta ${process.env.PORT}`);
 });
