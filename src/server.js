@@ -1,7 +1,4 @@
-if (process.env.NODE_ENV !== 'production'){
-  require('dotenv').config({ path: './.env' });
-}
-  
+require('dotenv').config();  
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -16,7 +13,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.use("/api/", router);
 
-module.exports = app
-/*app.listen(process.env.PORT, () => {
+//module.exports = app
+app.listen(process.env.PORT, () => {
   console.log(`Servidor rodando na porta ${process.env.PORT}`);
-});*/
+});

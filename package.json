@@ -29,6 +29,6 @@
     "pg-hstore": "^2.3.4",
     "prettier": "^3.3.3",
     "sequelize": "^6.37.4",
-    "vercel": "^32.3.0"
+    "vercel": "^28.18.5"
   }
 }
