@@ -1,5 +1,7 @@
 
-require("dotenv").config({path: "../../.env"})
+if (process.env.NODE_ENV !== 'production') {
+  require("dotenv").config({path: "../../.env"})
+}
 const bcrypt = require('bcrypt');
 const  User  = require('../models/users'); // ajuste conforme a sua estrutura de modelos
 
