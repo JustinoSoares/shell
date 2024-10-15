@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.use("/api/", router);
 
-//module.exports = app
-app.listen(port, () => {
+module.exports = app
+/*app.listen(port, '0.0.0.0', () => {
   console.log(`Servidor rodando na porta ${process.env.PORT}`);
-});
+});*/

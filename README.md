@@ -4,7 +4,7 @@ Esta documentação descreve as rotas disponíveis para o gerenciamento de usuá
 
 ## URL Base
 
-http://localhost:3000/api/
+https://shell-nqt2lll1z-justino-soares-projects.vercel.app/api/
 
 ## Autenticação
 
