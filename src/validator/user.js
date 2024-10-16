@@ -4,9 +4,9 @@ const ModuleUser = require("../models/users");
 const userCreate = [
   body("name").trim().escape()
     .notEmpty()
+    .withMessage("O primeiro nome deve ser preenchido!")
     .isLength({ min: 3 })
     .withMessage('O nome deve ter no mínimo 3 caracteres')
-    .withMessage("O primeiro nome deve ser preenchido!")
     .bail(), // para de validar se encontrar um erro, isso evita validacoes desnecessárias
 
   body("email").isEmail().withMessage("Email Inválido.")
