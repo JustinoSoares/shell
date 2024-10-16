@@ -194,7 +194,7 @@ module.exports = {
 
       return res
         .status(200)
-        .json({ status: 'true', msg: 'Login bem sucedido', token, userId: user.id })
+        .json({ status: 'true', msg: 'Login bem sucedido', token, userId: req.userId })
     } catch (error) {
       return res.status(401).json({
         status: 'error',
