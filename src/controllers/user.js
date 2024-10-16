@@ -90,6 +90,7 @@ module.exports = {
             id: user.id,
             index: index + 1,
             name: user.name,
+            email: user.email,
             resultado: user.resolvidos,
             pontos: users.pontos,
             pais: await getCountryData(user.pais)
