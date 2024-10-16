@@ -12,7 +12,7 @@ const exec = require('./controllers/exec')
 const multer = require('multer')
 const path = require('path')
 const auth = require('./middleware/auth')
-//const kickof = require("./controllers/kickof");
+const kickof = require("./controllers/kickof");
 router.get('/', (req, res) => {
   res.json({
     msg: 'Seja bem vindo ao shell'
@@ -53,10 +53,9 @@ const upload = multer({
 })
 router.get(
   '/each_user/:userId',
-  auth.authenticateToken,
   user_controller.each_user
 )
-router.get('/show_users', auth.authenticateToken, user_controller.show_users)
+router.get('/show_users', user_controller.show_users)
 router.get('/each_ex/:exId', auth.authenticateToken, exec.each_ex)
 router.get('/show_ex', auth.authenticateToken, exec.show_ex)
 router.post(
