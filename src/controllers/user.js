@@ -72,7 +72,7 @@ module.exports = {
         })
       }
 
-      async function getCountryData (countryName) {
+      async function getCountryData(countryName) {
         try {
           const response = await axios.get(
             `https://restcountries.com/v3.1/name/${countryName}`
@@ -84,7 +84,7 @@ module.exports = {
           return 'País não encontrado'
         }
       }
-      async function mapUsersWithCountry () {
+      async function mapUsersWithCountry() {
         const resultado = await Promise.all(
           users.map(async (user, index) => ({
             id: user.id,
@@ -114,7 +114,7 @@ module.exports = {
   // criar users
   create: async (req, res) => {
     // function cryptografia
-    async function hashPassword (password) {
+    async function hashPassword(password) {
       const saltsRounds = 10
       const hashedPassword = await bcrypt.hash(password, saltsRounds)
       return hashedPassword
@@ -194,7 +194,7 @@ module.exports = {
 
       return res
         .status(200)
-        .json({ status: 'true', msg: 'Login bem sucedido', token })
+        .json({ status: 'true', msg: 'Login bem sucedido', token, userId: req.userId  })
     } catch (error) {
       return res.status(401).json({
         status: 'error',
