@@ -5,7 +5,36 @@ const { body, validationResult } = require('express-validator')
 const jwt = require('jsonwebtoken')
 const User = require('../models/users')
 const Ex = require('../models/exercice')
+const Activity = require('../models/activity')
 const axios = require('axios')
+const { Op } = require('sequelize')
+const sequelize = require('../db')
+
+// Função para buscar as atividades de um usuário na semana
+async function getUserExercisesThisWeek(userId) {
+  const startOfWeek = new Date();
+  startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); // Primeiro dia da semana (Domingo)
+
+  const endOfWeek = new Date();
+  endOfWeek.setDate(startOfWeek.getDate() + 6); // Último dia da semana (Sábado)
+
+  const activities = await Activity.findAll({
+    where: {
+      userId: userId,
+      date: {
+        [Op.between]: [startOfWeek, endOfWeek], // Filtra entre o início e o fim da semana
+      },
+    },
+    attributes: [
+      'date',
+      [sequelize.fn('sum', sequelize.col('points')), 'totalPoints'], // Soma os pontos de cada dia
+    ],
+    group: ['date'], // Agrupar por data
+    order: [['date', 'ASC']], // Ordena pelos dias
+  });
+
+  return activities;
+}
 
 module.exports = {
   // cada usuário
@@ -54,6 +83,7 @@ module.exports = {
       pontos,
       resolvidos,
       country: await getCountryData(pais),
+      progress: await getUserExercisesThisWeek(id),
       createdAt,
       updatedAt,
       exercices
@@ -102,7 +132,7 @@ module.exports = {
             name: user.name,
             email: user.email,
             resultado: user.resolvidos,
-            pontos: users.pontos,
+            pontos: users.pontos || 0,
             pais: await getCountryData(user.pais)
           }))
         )

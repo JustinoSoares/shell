@@ -1,11 +1,27 @@
 const express = require('express')
 const fs = require('fs')
-const { exec } = require('child_process')
+const { execFile } = require('child_process')
 const axios = require('axios')
 const Ex = require('../models/exercice')
 const User = require('../models/users')
 const Exercice = require('../models/exercice')
 const User_ex = require('../models/user_has_ex')
+const ExerciseActivity = require('../models/activity');
+
+async function registerExercise(userId, points) {
+  const today = new Date(); // Data de hoje
+  try {
+    const activity = await ExerciseActivity.create({
+      userId: userId,
+      date: today,
+      points: points,
+    });
+    console.log('Atividade registrada com sucesso!');
+    return true;
+  } catch (error) {
+    console.error('Erro ao registrar atividade:', error);
+  }
+}
 
 module.exports = {
   validate: async (req, res) => {
@@ -14,8 +30,8 @@ module.exports = {
     const user = await User.findByPk(req.userId)
     const conteudo = req.body.content
     const response = await Ex.findByPk(exId)
-    exec(
-      `sh ./${response.tester} "${conteudo}"`,
+    execFile(
+      `./${response.tester}`, [conteudo],
       async (error, stdout, stderr) => {
         if (error) {
           return res.json({
@@ -48,7 +64,8 @@ module.exports = {
             user.resolvidos += 1
             //Aumentar o nível
             user.pontos += ex.nivel
-            User_ex.create({
+           registerExercise(req.userId, 1);
+            await User_ex.create({
               userId: req.userId,
               exId: req.params.exId,
               feito: true

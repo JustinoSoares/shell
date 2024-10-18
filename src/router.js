@@ -4,6 +4,7 @@ const users = require('./models/users')
 const exercices = require('./models/exercice')
 const relationship = require('./models/relationship')
 const user_ex = require('./models/user_has_ex')
+const Ex_activity = require('./models/activity')
 const user_controller = require('./controllers/user')
 const { body, validationResult } = require('express-validator')
 const validatorUser = require('./validator/user')
@@ -13,7 +14,6 @@ const multer = require('multer')
 const path = require('path')
 const auth = require('./middleware/auth')
 const kickof = require("./controllers/kickof");
-//const smtp = require("./middleware/smtp");
 const reset_password = require('./controllers/reset_password')
 
 router.get('/', (req, res) => {
