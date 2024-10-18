@@ -18,6 +18,18 @@ module.exports = {
         }
       }
     })
+    async function getCountryData(countryName) {
+      try {
+        const response = await axios.get(
+          `https://restcountries.com/v3.1/name/${countryName}`
+        )
+        // Retorna o nome oficial do país
+        return [response.data[0].flag, response.data[0].name.common]
+      } catch (error) {
+        console.error(`Erro ao buscar o país ${countryName}:`, error)
+        return 'País não encontrado'
+      }
+    }
     if (!user) {
       return res.status('404').json({
         status: 'false',
@@ -28,7 +40,6 @@ module.exports = {
       id,
       name,
       email,
-      sex,
       pontos,
       resolvidos,
       pais,
@@ -40,10 +51,9 @@ module.exports = {
       id,
       name,
       email,
-      sex,
       pontos,
       resolvidos,
-      pais,
+      country: await getCountryData(pais),
       createdAt,
       updatedAt,
       exercices
@@ -158,6 +168,44 @@ module.exports = {
     }
   },
 
+  update_user: async (req, res) => {
+    try {
+      const userId = req.userId;
+      const { name, email, pais, password, newPassword } = req.body
+      const user = await ModuleUser.findByPk(userId)
+      if (!user) {
+        return res.status(404).json({
+          status: 'false',
+          msg: 'Usuário não encontrado'
+        })
+      }
+      if (name) user.name = name;
+      if (email) user.email = email;
+      if (pais) user.pais = pais;
+      // Se a senha atual foi fornecida, faça a verificação e atualização da nova senha
+      if (password && newPassword) {
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (!validPassword) {
+          return res.status(400).json({ status: "false", msg: 'A palavra chave actual está incorreta' });
+        }
+        // Criptografa a nova senha
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+      }
+      await user.save();
+      return res.status(200).json({
+        status: 'true',
+        msg: 'Dados atualizados com sucesso',
+        user
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status: 'false',
+        msg: 'Ocorreu um erro'
+      })
+    }
+  },
+
   login: async (req, res) => {
     const secret_key =
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
@@ -194,7 +242,7 @@ module.exports = {
 
       return res
         .status(200)
-        .json({ status: 'true', msg: 'Login bem sucedido', token, userId: req.userId, username: user.name  })
+        .json({ status: 'true', msg: 'Login bem sucedido', token, userId: req.userId, username: user.name })
     } catch (error) {
       return res.status(401).json({
         status: 'error',

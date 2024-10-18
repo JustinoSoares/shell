@@ -13,15 +13,23 @@ const multer = require('multer')
 const path = require('path')
 const auth = require('./middleware/auth')
 const kickof = require("./controllers/kickof");
+//const smtp = require("./middleware/smtp");
+const reset_password = require('./controllers/reset_password')
+
 router.get('/', (req, res) => {
   res.json({
     msg: 'Seja bem vindo ao shell'
   })
 })
 
-router.post('/create_user', validatorUser.userCreate, user_controller.create)
-router.post('/login', user_controller.login)
-
+// Users
+router.post('/create_user', validatorUser.userCreate, user_controller.create);
+router.post('/login', user_controller.login);
+router.get('/show_users', user_controller.show_users);
+router.get('/each_user/:userId', user_controller.each_user);
+router.put('/update_user/', auth.authenticateToken, user_controller.update_user);
+router.post('/forgot_password', reset_password.forgot_password);
+router.post('/reset_password/:token', reset_password.reset_password);
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'upload/') // Pasta onde os arquivos serão armazenados
@@ -51,11 +59,8 @@ const upload = multer({
     }
   }
 })
-router.get(
-  '/each_user/:userId',
-  user_controller.each_user
-)
-router.get('/show_users', user_controller.show_users)
+
+//Exercices
 router.get('/each_ex/:exId', auth.authenticateToken, exec.each_ex)
 router.get('/show_ex', auth.authenticateToken, exec.show_ex)
 router.post(
@@ -65,5 +70,4 @@ router.post(
   exec.create_ex
 )
 router.post('/validate/:exId', auth.authenticateToken, validate_exec.validate)
-
 module.exports = router

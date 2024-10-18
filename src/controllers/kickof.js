@@ -29,8 +29,3 @@ async function createAdmin() {
 
 // Chama a função de criação do admin
 createAdmin().catch(console.error);
-
-
-
-
-//module.exports = createAdmin;
