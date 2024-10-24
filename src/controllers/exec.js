@@ -6,6 +6,13 @@ const Exercice = require('../models/exercice')
 const User_ex = require("../models/user_has_ex");
 const { Sequelize, Op, where } = require('sequelize')
 const User = require('../models/users')
+const path = require('path');
+const fs = require('fs');
+const dropboxV2Api = require('dropbox-v2-api');
+
+const dropbox = dropboxV2Api.authenticate({
+  token: process.env.DROPBOX_TOKEN // Certifique-se de ter o token do Dropbox configurado
+});
 module.exports = {
   each_ex: async (req, res) => {
     try {
@@ -100,27 +107,82 @@ module.exports = {
       })
     }
     try {
-      const { name, subject, nivel, categoria } = req.body
 
-      const ex = await Exercice.create({
-        name,
-        subject,
-        nivel,
-        categoria,
-        tester: req.file.path
-      })
-      res.status(201).json({
-        status: 'true',
-        msg: 'Exercice cadastrado com sucesso',
-        data: ex
-      })
-    } catch (error) {
-      return res.status(500).json({
-        status: 'false',
-        msg: 'Ocorreu um erro',
-        mm: error
-      })
-    }
+        const { name, subject, nivel, categoria } = req.body;
+    
+        // Caminho local do arquivo que foi feito upload com multer
+        const localFilePath = req.file.path;
+
+        // Definir o caminho no Dropbox para onde o arquivo será enviado
+        const dropboxFilePath = `/uploads/${req.file.filename}`; // Pasta no Dropbox
+
+    // Ler o arquivo local e enviar para o Dropbox
+    const uploadFile = new Promise((resolve, reject) => {
+      fs.createReadStream(localFilePath)
+        .pipe(dropbox({
+          resource: 'files/upload',
+          parameters: {
+            path: dropboxFilePath,
+            mode: 'add',
+            autorename: true,
+            mute: false
+          }
+        }, (err, result) => {
+          if (err) {
+            reject(err); // Rejeitar a promessa em caso de erro
+          } else {
+            resolve(result); // Resolver a promessa com o resultado
+          }
+        }));
+    });
+
+    const result = await uploadFile; // Espera o upload completar
+
+    // Após o upload, gerar um link compartilhável
+    const createSharedLink = new Promise((resolve, reject) => {
+      dropbox({
+        resource: 'sharing/create_shared_link_with_settings',
+        parameters: {
+          path: result.path_lower // O caminho retornado no upload do arquivo
+        }
+      }, (err, linkResult) => {
+        if (err) {
+          reject(err); // Rejeitar a promessa em caso de erro
+        } else {
+          resolve(linkResult); // Resolver a promessa com o link gerado
+        }
+      });
+    });
+
+    const linkResult = await createSharedLink; // Espera o link ser gerado
+
+        // Link compartilhável gerado
+        const dropboxSharedLink = linkResult.url;
+    // Salvar o link no banco de dados
+        const replacedropboxSharedLink = dropboxSharedLink.replace('dl=0', 'dl=1');
+    const ex = await Exercice.create({
+      name,
+      subject,
+      nivel,
+      categoria,
+      tester: replacedropboxSharedLink // Salvar o link do Dropbox no banco de dados
+    });
+    
+            // Remover o arquivo local após o upload
+            fs.unlink(localFilePath, (err) => {
+              if (err) {
+                console.error('Erro ao remover arquivo local:', err);
+              }
+            });
+    
+            return res.status(201).json({
+              message: 'Exercicio criado com sucesso e arquivo enviado para o Dropbox!',
+              ex
+            });
+      } catch (error) {
+        console.error('Erro ao criar exercício:', error);
+        return res.status(500).json({ error: 'Erro ao criar exercício.' });
+      }
   },
 
   update_ex: async (req, res) => {

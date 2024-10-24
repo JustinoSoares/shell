@@ -16,6 +16,7 @@ const auth = require('./middleware/auth')
 const kickof = require("./controllers/kickof");
 const reset_password = require('./controllers/reset_password')
 
+
 router.get('/', (req, res) => {
   res.json({
     msg: 'Seja bem vindo ao shell'
@@ -59,6 +60,7 @@ const upload = multer({
     }
   }
 })
+
 
 //Exercices
 router.get('/each_ex/:exId', auth.authenticateToken, exec.each_ex)

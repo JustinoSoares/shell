@@ -53,4 +53,38 @@ const userLogin = [
     .bail(),
 ];
 
-module.exports = { userCreate, userUpdate, userLogin };
+const exCreate = [
+  body("name").trim().escape()
+    .notEmpty()
+    .withMessage("O name deve ser preenchido!")
+    .isLength({ min: 3 })
+    .withMessage('O nome deve ter no mínimo 3 caracteres')
+    .bail(), // para de validar se encontrar um erro, isso evita validacoes desnecessárias
+
+  body("subject").trim().escape()
+    .notEmpty()
+    .withMessage("O subject deve ser preenchido!")
+    .isLength({ min: 3 })
+    .withMessage('O subject deve ter no mínimo 3 caracteres')
+    .bail(),
+  body("categoria").trim().escape()
+    .notEmpty()
+    .withMessage("O categoria deve ser preenchido!")
+    .isLength({ min: 3 })
+    .withMessage('O categoria deve ter no mínimo 3 caracteres')
+    .bail(),
+  body("nivel").trim().escape()
+    .notEmpty()
+    .withMessage("O nivel deve ser preenchido!")
+    .bail(),
+  body("tester").custom((value, { req }) => {
+    if (!value) {
+      return req.message("O tester deve ser preenchido!");
+    }
+    if (!value.endsWith(".sh")) {
+      return req.message("O tester deve ser um arquivo .sh!");
+    }
+    return true;
+  }),
+];
+module.exports = { userCreate, userUpdate, userLogin, exCreate };
