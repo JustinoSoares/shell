@@ -9,7 +9,12 @@ const sequelize = new Sequelize(
   {
     host: process.env.HOST,
     dialect: 'mysql',
-    //dialectModule: 'mysql2'
+    pool: {
+      max: 5,   // número máximo de conexões simultâneas
+      min: 0,
+      acquire: 30000,  // tempo máximo, em milissegundos, que o pool tentará obter uma conexão antes de lançar um erro
+      idle: 10000   // tempo máximo, em milissegundos, que uma conexão pode ficar inativa antes de ser liberada
+    }
   }
 );
 
