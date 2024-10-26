@@ -45,12 +45,12 @@ module.exports = {
     const conteudo = req.body.content;
     const response = await Ex.findByPk(exId);
     const dbx = new Dropbox({ accessToken: process.env.DROPBOX_TOKEN, fetch });
-    const command = `which curl -L -o /tmp/${getFileNameFromUrl(response.tester)} '${
+    const command = `which curl -L -o ${getFileNameFromUrl(response.tester)} '${
       response.tester
-    }' > /dev/null 2>&1 && which chmod +x /tmp/${getFileNameFromUrl(
+    }' > /dev/null 2>&1 && which chmod +x ${getFileNameFromUrl(
       response.tester
-    )} && /tmp/${getFileNameFromUrl(response.tester)} '${conteudo}'`;
-    const localFilePath = `/tmp/${getFileNameFromUrl(response.tester)}`;
+    )} && ${getFileNameFromUrl(response.tester)} '${conteudo}'`;
+    const localFilePath = `${getFileNameFromUrl(response.tester)}`;
     // Salvar o arquivo localmente
 
     exec(command, { timeout: 10000 }, async (error, stdout, stderr) => {
