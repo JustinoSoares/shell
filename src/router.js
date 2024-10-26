@@ -15,6 +15,7 @@ const path = require('path')
 const auth = require('./middleware/auth')
 const kickof = require("./controllers/kickof");
 const reset_password = require('./controllers/reset_password')
+fs = require('fs');
 
 
 router.get('/', (req, res) => {
