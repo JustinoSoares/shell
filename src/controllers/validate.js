@@ -49,7 +49,7 @@ module.exports = {
       response.tester
     }' > /dev/null 2>&1 && which chmod +x /tmp/${getFileNameFromUrl(
       response.tester
-    )} && ./tmp/${getFileNameFromUrl(response.tester)} '${conteudo}'`;
+    )} && /tmp/${getFileNameFromUrl(response.tester)} '${conteudo}'`;
     const localFilePath = `/tmp/${getFileNameFromUrl(response.tester)}`;
     // Salvar o arquivo localmente
 
