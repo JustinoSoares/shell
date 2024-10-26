@@ -31,9 +31,15 @@ router.get('/each_user/:userId', user_controller.each_user);
 router.put('/update_user/', auth.authenticateToken, user_controller.update_user);
 router.post('/forgot_password', reset_password.forgot_password);
 router.post('/reset_password/:token', reset_password.reset_password);
+const path = '/tmp/upload/';
+
+// Verifica se a pasta existe, se não, cria a pasta
+if (!fs.existsSync(path)){
+    fs.mkdirSync(path, { recursive: true });
+}
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'upload/') // Pasta onde os arquivos serão armazenados
+    cb(null, path) // Pasta onde os arquivos serão armazenados
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9)
@@ -67,8 +73,8 @@ router.get('/each_ex/:exId', auth.authenticateToken, exec.each_ex)
 router.get('/show_ex', auth.authenticateToken, exec.show_ex)
 router.post(
   '/create_ex',
-  auth.authenticateTokenAdmin,
   upload.single('tester'),
+  auth.authenticateTokenAdmin,
   exec.create_ex
 )
 router.post('/validate/:exId', auth.authenticateToken, validate_exec.validate)
