@@ -26,13 +26,13 @@ async function registerExercise(userId, points) {
 
 function getFileNameFromUrl(url) {
   // Usando o método split() para separar a URL pelos '/'
-  const parts = url.split('/');
-  
+  const parts = url.split("/");
+
   // Pegando a última parte da URL que contém o nome do arquivo e os parâmetros
   const lastPart = parts[parts.length - 1];
 
   // Usando split() novamente para separar os parâmetros a partir de '?'
-  const fileName = lastPart.split('?')[0];
+  const fileName = lastPart.split("?")[0];
 
   return fileName;
 }
@@ -45,14 +45,26 @@ module.exports = {
     const conteudo = req.body.content;
     const response = await Ex.findByPk(exId);
     const dbx = new Dropbox({ accessToken: process.env.DROPBOX_TOKEN, fetch });
-    const command = `curl -L -o ./tmp/${getFileNameFromUrl(response.tester)} ${response.tester} && chmod +x ./tmp/${getFileNameFromUrl(response.tester)} && bash -x ./tmp/${getFileNameFromUrl(response.tester)} "${conteudo}"`;
+    const command = `curl -L -o ./tmp/${getFileNameFromUrl(response.tester)} '${
+      response.tester
+    }' > /dev/null 2>&1 && chmod +x ./tmp/${getFileNameFromUrl(
+      response.tester
+    )} && ./tmp/${getFileNameFromUrl(response.tester)} '${conteudo}'`;
     const localFilePath = `./tmp/${getFileNameFromUrl(response.tester)}`;
     // Salvar o arquivo localmente
 
-    exec(command, { timeout: 5000 }, async (error, stdout, stderr) => {
+    exec(command, { timeout: 10000 }, async (error, stdout, stderr) => {
       if (error) {
+        if (localFilePath) {
+          // Remover o arquivo local após o upload
+          fs.unlink(localFilePath, (err) => {
+            if (err) {
+              console.error("Erro ao remover arquivo local:", err);
+            }
+          });
+        }
         return res.json({
-          status: "erro",
+          status: "error",
           msg: error,
         });
       }
@@ -61,8 +73,18 @@ module.exports = {
         const simplifiedError = stderr
           .replace(/\/.*\//g, "") // Remove caminho de diretórios
           .replace(/:\s\d+:\s/g, ": "); // Remove números de linha
+        // Remover o arquivo local após o upload
+        if (localFilePath) {
+          // Remover o arquivo local após o upload
+          fs.unlink(localFilePath, (err) => {
+            if (err) {
+              console.error("Erro ao remover arquivo local:", err);
+            }
+          });
+        }
         return res.json({
           status: "error",
+          response: "KO",
           msg: simplifiedError,
         });
       }
@@ -90,10 +112,27 @@ module.exports = {
           await ex.save();
           await user.save();
         }
+        // Remover o arquivo local após o upload
+        if (localFilePath) {
+          // Remover o arquivo local após o upload
+          fs.unlink(localFilePath, (err) => {
+            if (err) {
+              console.error("Erro ao remover arquivo local:", err);
+            }
+          });
+        }
         return res.json({
           status: "true",
           response: "OK",
           msg: stdout.split(" ").slice(2).join(" "),
+        });
+      }
+      if (localFilePath) {
+        // Remover o arquivo local após o upload
+        fs.unlink(localFilePath, (err) => {
+          if (err) {
+            console.error("Erro ao remover arquivo local:", err);
+          }
         });
       }
       return res.json({
