@@ -15,7 +15,8 @@ const path = require('path')
 const auth = require('./middleware/auth')
 const kickof = require("./controllers/kickof");
 const reset_password = require('./controllers/reset_password')
-fs = require('fs');
+const fs = require('fs');
+const path_upload = '/tmp/upload/';
 
 
 router.get('/', (req, res) => {
@@ -32,12 +33,13 @@ router.get('/each_user/:userId', user_controller.each_user);
 router.put('/update_user/', auth.authenticateToken, user_controller.update_user);
 router.post('/forgot_password', reset_password.forgot_password);
 router.post('/reset_password/:token', reset_password.reset_password);
-const path_upload = '/tmp/upload/';
+
 
 // Verifica se a pasta existe, se não, cria a pasta
 if (!fs.existsSync(path_upload)){
     fs.mkdirSync(path_upload, { recursive: true });
 }
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path_upload) // Pasta onde os arquivos serão armazenados

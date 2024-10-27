@@ -4,7 +4,7 @@ Esta documentação descreve as rotas disponíveis para o gerenciamento de usuá
 
 ## URL Base
 
-https://shell-nqt2lll1z-justino-soares-projects.vercel.app/api/
+https://shell-git-master-justino-soares-projects.vercel.app/api/
 
 ## Autenticação
 
@@ -80,6 +80,7 @@ https://shell-nqt2lll1z-justino-soares-projects.vercel.app/api/
     "nivel": "integer"
   }
   ```
+
 ### Pegar cada usuário pelo Id
 
 - **URL**: `/each_user/:userId`
@@ -89,33 +90,33 @@ https://shell-nqt2lll1z-justino-soares-projects.vercel.app/api/
 
   ```json
   {
-	"status": "true",
-	"msg": "User encontrado",
-	"data": {
-		"id": "INT",
-		"name": "string",
-		"email": "string",
-		"sex": "string",
-		"pontos": "INT",
-		"resolvidos": "INT",
-		"pais": "string",
-		"createdAt": "date-time",
-		"updatedAt": "date-time",
-		"exercices": [
+  ,
+  ,
+  {
+  ,
+  ,
+  ,
+  ,
+  ,
+  ,
+  ,
+  ,
+  ,
+  [
           {
-				"id": "INT",
-				"name": "string",
-				"subject": "string",
-				"nivel": "INT",
-				"categoria": "string",
-				"tester": "string",
-				"resolvidos": "INT",
-				"createdAt": "date-time",
-				"updatedAt": "date-time",
-				"user_exes": {
-					"feito": "BOOLEAN"
-				}
-			}
+  ,
+  ,
+  ,
+  ,
+  ,
+  ,
+  ,
+  ,
+  ,
+  {
+  "
+  }
+  }
         ]
   }
   ```
@@ -130,22 +131,18 @@ https://shell-nqt2lll1z-justino-soares-projects.vercel.app/api/
 
 ```json
 {
-	"status": "true",
-	"msg": "Encontrado com sucesso",
-	"data": [
-		{
-			"id": "INT",
-			"index": "INT",
-			"name": "string",
-			"resultado": "INT",
-			"pais": [
-				"🇦🇴",
-				"Nome_do_pais"
-			]
-		}
-	]
+  "status": "true",
+  "msg": "Encontrado com sucesso",
+  "data": [
+    {
+      "id": "INT",
+      "index": "INT",
+      "name": "string",
+      "resultado": "INT",
+      "pais": ["🇦🇴", "Nome_do_pais"]
+    }
+  ]
 }
-
 ```
 
 ### Pegar cada exercicio pelo id
@@ -154,25 +151,26 @@ https://shell-nqt2lll1z-justino-soares-projects.vercel.app/api/
 - **Método**: `GET`
 - **Auth**: true.
 - **Corpo da Requisição**:
+
 ```json
- {
-    "status": "true",
-	"msg": "Exercício encontrado com sucesso",
-	"data": {
-		"id": "INT",
-		"name": "string",
-		"subject": "string",
-	    "nivel": "INT",
-		"categoria": "string",
-		"tester": "string",
-		"resolvidos": "INT",
-		"createdAt": "date-time",
-		"updatedAt": "date-time",
-		"user_exes": {
-    		"feito": "BOOLEAN"
-		}
+{
+  "status": "true",
+  "msg": "Exercício encontrado com sucesso",
+  "data": {
+    "id": "INT",
+    "name": "string",
+    "subject": "string",
+    "nivel": "INT",
+    "categoria": "string",
+    "tester": "string",
+    "resolvidos": "INT",
+    "createdAt": "date-time",
+    "updatedAt": "date-time",
+    "user_exes": {
+      "feito": "BOOLEAN"
     }
- }
+  }
+}
 ```
 
 ### Pegar todos exercicios
@@ -180,27 +178,25 @@ https://shell-nqt2lll1z-justino-soares-projects.vercel.app/api/
 - **URL**: `/show_ex`
 - **Método**: `GET`
 - **Auth**: true.
-- **Filtragem**: `categoria`  `order_by` `asc_desc` `limitMax`
+- **Filtragem**: `categoria` `order_by` `asc_desc` `limitMax`
 - **Corpo da Requisição**:
 
 ```json
 {
-	"status": "true",
-	"msg": "Encontrado com sucesso",
-	"data": [
-		{
-			"id": "INT",
-			"index": "INT",
-			"name": "string",
-			"feito": "BOOL",
-			"categoria": "string",
-			"resolvidos": "INT"
-		}
-	]
+  "status": "true",
+  "msg": "Encontrado com sucesso",
+  "data": [
+    {
+      "id": "INT",
+      "index": "INT",
+      "name": "string",
+      "feito": "BOOL",
+      "categoria": "string",
+      "resolvidos": "INT"
+    }
+  ]
 }
-
 ```
-
 
 ### Pegar todos exercicios
 
@@ -208,11 +204,11 @@ https://shell-nqt2lll1z-justino-soares-projects.vercel.app/api/
 - **Método**: `GET`
 - **Auth**: true.
 - **Descricao**: o avaliador.
-`limitMax`
+  `limitMax`
 - **Corpo da Requisição**:
 
 ```json
-  {
-    "content": "string",
-  }
+{
+  "content": "string"
+}
 ```

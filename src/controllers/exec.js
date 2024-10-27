@@ -7,8 +7,10 @@ const User_ex = require("../models/user_has_ex");
 const { Sequelize, Op, where } = require("sequelize");
 const User = require("../models/users");
 const path = require("path");
-const fs = require("fs");
+const fs = require('fs');
 const dropboxV2Api = require("dropbox-v2-api");
+const axis = require("axios");
+const token_dropbox = require("../middleware/token_dropbox");
 
 const dropbox = dropboxV2Api.authenticate({
   token: process.env.DROPBOX_TOKEN, // Certifique-se de ter o token do Dropbox configurado
