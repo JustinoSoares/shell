@@ -266,13 +266,13 @@ module.exports = {
         return res
           .status(401)
           .json({ status: 'false', msg: 'Email ou senha inválida' })
-      const token = jwt.sign({ id: user.id }, secret_key, { expiresIn: '3d' })
+      const token = jwt.sign({ id: user.id, permission : user.permission }, secret_key, { expiresIn: '3d' })
       const verified = jwt.verify(token, secret_key)
       req.userId = verified.id
 
       return res
         .status(200)
-        .json({ status: 'true', msg: 'Login bem sucedido', token, userId: req.userId, username: user.name })
+        .json({ status: 'true', msg: 'Login bem sucedido', token, userId: req.userId, username: user.name, pemission : user.pemission })
     } catch (error) {
       return res.status(401).json({
         status: 'error',

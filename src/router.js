@@ -17,6 +17,7 @@ const kickof = require("./controllers/kickof");
 const reset_password = require('./controllers/reset_password')
 const fs = require('fs');
 const path_upload = '/tmp/upload/';
+const verifyToken = require('./middleware/verify_token_front');
 
 
 router.get('/', (req, res) => {
@@ -33,6 +34,7 @@ router.get('/each_user/:userId', user_controller.each_user);
 router.put('/update_user/', auth.authenticateToken, user_controller.update_user);
 router.post('/forgot_password', reset_password.forgot_password);
 router.post('/reset_password/:token', reset_password.reset_password);
+router.get('/verify_token', verifyToken.verifyToken);
 
 
 // Verifica se a pasta existe, se não, cria a pasta
