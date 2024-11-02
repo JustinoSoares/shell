@@ -8,6 +8,8 @@ const Exercice = require("../models/exercice");
 const User_ex = require("../models/user_has_ex");
 const ExerciseActivity = require("../models/activity");
 const { Dropbox } = require("dropbox");
+const token_dropbox = require("../middleware/token_dropbox");
+require("dotenv").config();
 
 async function registerExercise(userId, points) {
   const today = new Date(); // Data de hoje
@@ -48,6 +50,13 @@ module.exports = {
       process.env.DROPBOX_REFRESH
     );
     const dbx = new Dropbox({ accessToken: accessToken, fetch });
+    if (!response)
+    {
+      return res.status(404).json({
+        status: "false",
+        msg: "Exercício não encontrado",
+      });
+    }
     const command = `curl -L -o /tmp/${getFileNameFromUrl(response.tester)} '${
       response.tester
     }' > /dev/null 2>&1 &&  chmod +x /tmp/${getFileNameFromUrl(
