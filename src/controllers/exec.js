@@ -108,7 +108,7 @@ module.exports = {
       const { name, subject, nivel, categoria } = req.body;
       const accessToken = await token_dropbox.refreshAccessToken(process.env.DROPBOX_REFRESH);
       const dropbox = dropboxV2Api.authenticate({
-        token: accessToken, // Certifique-se de ter o token do Dropbox configurado
+        token: process.env.DROPBOX_TOKEN, // Certifique-se de ter o token do Dropbox configurado
       });
       // Caminho local do arquivo que foi feito upload com multer
       const localFilePath = req.file.path;
