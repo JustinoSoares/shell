@@ -54,7 +54,7 @@ const authenticateTokenAdmin = async (req, res, next) => {
     }
 
     // Verifica e decodifica o token
-    const verified = jwt.verify(token, secret_key, (err, decoded) => {
+    const verified = jwt.verify(token, secret_key, (err, decoded, next) => {
       if (err) {
         // Personalizar a mensagem de erro
         return res.status(401).json({
@@ -62,23 +62,19 @@ const authenticateTokenAdmin = async (req, res, next) => {
           msg: "Token inválido. Por favor, forneça um token válido.",
         });
       }
-      next();
+      if (decoded.permission != "admin") {
+        return res.status(401).json({
+          status: false,
+          msg: "Token inválido",
+        });
+      }
     });
-    const user = await User.findByPk(verified.id);
-    if (user.permission !== "admin") {
-      return res.status(401).json({
-        status: false,
-        msg: "Token inválido",
-      });
-    }
-    // Define o ID do usuário no req para ser usado nas rotas
-    req.userId = verified.id;
-
     next();
   } catch (error) {
     res.status(401).json({
       status: false,
       msg: "Token inválido",
+      mm: error,
     });
   }
 };

@@ -7,12 +7,11 @@ const User_ex = require("../models/user_has_ex");
 const { Sequelize, Op, where } = require("sequelize");
 const User = require("../models/users");
 const path = require("path");
-const fs = require('fs');
+const fs = require("fs");
 const dropboxV2Api = require("dropbox-v2-api");
 const axis = require("axios");
 const token_dropbox = require("../middleware/token_dropbox");
 require("dotenv").config();
-
 
 module.exports = {
   each_ex: async (req, res) => {
@@ -106,9 +105,11 @@ module.exports = {
     }
     try {
       const { name, subject, nivel, categoria } = req.body;
-      const accessToken = await token_dropbox.refreshAccessToken(process.env.DROPBOX_REFRESH);
+      const accessToken = await token_dropbox.refreshAccessToken(
+        process.env.DROPBOX_REFRESH
+      );
       const dropbox = dropboxV2Api.authenticate({
-        token: process.env.DROPBOX_TOKEN, // Certifique-se de ter o token do Dropbox configurado
+        token: accessToken, // Certifique-se de ter o token do Dropbox configurado
       });
       // Caminho local do arquivo que foi feito upload com multer
       const localFilePath = req.file.path;
@@ -164,9 +165,9 @@ module.exports = {
       const linkResult = await createSharedLink; // Espera o link ser gerado
 
       // Link compartilhável gerado
-      const dropboxSharedLink = linkResult.url;
+      const dropboxSharedLink = await linkResult.url;
       // Salvar o link no banco de dados
-      const replacedropboxSharedLink = dropboxSharedLink.replace(
+      const replacedropboxSharedLink = await dropboxSharedLink.replace(
         "dl=0",
         "dl=1"
       );
@@ -186,8 +187,8 @@ module.exports = {
       });
 
       return res.status(201).json({
-        message:
-          "Exercicio criado com sucesso e arquivo enviado para o Dropbox!",
+        status: "true",
+        msg: "Exercicio criado com sucesso e arquivo enviado para o Dropbox!",
         ex,
       });
     } catch (error) {
