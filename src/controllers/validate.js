@@ -44,7 +44,10 @@ module.exports = {
     const user = await User.findByPk(req.userId);
     const conteudo = req.body.content;
     const response = await Ex.findByPk(exId);
-    const dbx = new Dropbox({ accessToken: process.env.DROPBOX_TOKEN, fetch });
+    const accessToken = await token_dropbox.refreshAccessToken(
+      process.env.DROPBOX_REFRESH
+    );
+    const dbx = new Dropbox({ accessToken: accessToken, fetch });
     const command = `curl -L -o /tmp/${getFileNameFromUrl(response.tester)} '${
       response.tester
     }' > /dev/null 2>&1 &&  chmod +x /tmp/${getFileNameFromUrl(
